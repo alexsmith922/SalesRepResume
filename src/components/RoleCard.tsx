@@ -67,13 +67,16 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
               onChange={(e) => handleInputChange('companyName', e.target.value)}
               className="border rounded px-3 py-2 text-gray-800"
             />
-            <input
-              type="text"
-              placeholder="Company Domain (e.g. salesforce.com)"
-              value={editedRole.companyDomain}
-              onChange={(e) => handleInputChange('companyDomain', e.target.value)}
-              className="border rounded px-3 py-2 text-gray-800"
-            />
+            <div>
+              <input
+                type="text"
+                placeholder="Domain for logo (e.g. salesforce.com)"
+                value={editedRole.companyDomain}
+                onChange={(e) => handleInputChange('companyDomain', e.target.value)}
+                className="w-full border rounded px-3 py-2 text-gray-800"
+              />
+              <p className="text-xs text-gray-500 mt-1">Just the domain, no https:// or www</p>
+            </div>
             <input
               type="text"
               placeholder="Your Title"
