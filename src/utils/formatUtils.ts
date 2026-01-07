@@ -1,6 +1,9 @@
 export function formatCurrency(amount: number): string {
+  if (amount >= 1000000000) {
+    return `$${(amount / 1000000000).toFixed(2)}B`;
+  }
   if (amount >= 1000000) {
-    return `$${(amount / 1000000).toFixed(1)}M`;
+    return `$${(amount / 1000000).toFixed(2)}M`;
   }
   if (amount >= 1000) {
     return `$${(amount / 1000).toFixed(0)}K`;
@@ -8,14 +11,18 @@ export function formatCurrency(amount: number): string {
   return `$${amount.toLocaleString()}`;
 }
 
+export function formatRevenuePerCall(amount: number): string {
+  return `$${Math.round(amount).toLocaleString()}`;
+}
+
 export function formatPercentage(value: number): string {
-  return `${value.toFixed(1)}%`;
+  return `${Math.round(value)}%`;
 }
 
 export function getCompanyLogoUrl(domain: string): string {
   if (!domain) return '';
   const cleanDomain = domain.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-  return `https://logo.clearbit.com/${cleanDomain}`;
+  return `https://www.google.com/s2/favicons?domain=${cleanDomain}&sz=128`;
 }
 
 // Generate consistent colors based on industry name

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Role } from '../types';
-import { formatCurrency, formatPercentage, getCompanyLogoUrl, formatDateRange, getIndustryColors } from '../utils/formatUtils';
+import { formatCurrency, formatPercentage, formatRevenuePerCall, getCompanyLogoUrl, formatDateRange, getIndustryColors } from '../utils/formatUtils';
 
 interface RoleCardProps {
   role: Role;
@@ -13,11 +13,13 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
   const [isEditing, setIsEditing] = useState(false);
   const [editedRole, setEditedRole] = useState(role);
   const [logoError, setLogoError] = useState(false);
+  const [negativeWarning, setNegativeWarning] = useState<string | null>(null);
 
   // Reset states when role prop changes
   useEffect(() => {
     setEditedRole(role);
     setLogoError(false);
+    setNegativeWarning(null);
   }, [role]);
 
   const logoUrl = getCompanyLogoUrl(role.companyDomain);
@@ -35,6 +37,12 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
   };
 
   const handleInputChange = (field: keyof Role, value: string | number | boolean) => {
+    // Prevent negative numbers
+    if (typeof value === 'number' && value < 0) {
+      setNegativeWarning(field);
+      setTimeout(() => setNegativeWarning(null), 2000);
+      value = 0;
+    }
     setEditedRole({ ...editedRole, [field]: value });
     if (field === 'companyDomain') {
       setLogoError(false);
@@ -99,38 +107,46 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
             <label className="block text-sm text-gray-600 mb-1">Revenue Generated ($)</label>
             <input
               type="number"
+              min="0"
               value={editedRole.revenueGenerated || ''}
               onChange={(e) => handleInputChange('revenueGenerated', parseFloat(e.target.value) || 0)}
-              className="w-full border rounded px-3 py-2 text-gray-800"
+              className={`w-full border rounded px-3 py-2 text-gray-800 ${negativeWarning === 'revenueGenerated' ? 'border-red-500 border-2' : ''}`}
             />
+            {negativeWarning === 'revenueGenerated' && <p className="text-red-500 text-xs mt-1">positive numbers only ya goof</p>}
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">Cash Collected ($)</label>
             <input
               type="number"
+              min="0"
               value={editedRole.cashCollected || ''}
               onChange={(e) => handleInputChange('cashCollected', parseFloat(e.target.value) || 0)}
-              className="w-full border rounded px-3 py-2 text-gray-800"
+              className={`w-full border rounded px-3 py-2 text-gray-800 ${negativeWarning === 'cashCollected' ? 'border-red-500 border-2' : ''}`}
             />
+            {negativeWarning === 'cashCollected' && <p className="text-red-500 text-xs mt-1">positive numbers only ya goof</p>}
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">Show Rate (%)</label>
             <input
               type="number"
+              min="0"
               step="0.1"
               value={editedRole.showRate || ''}
               onChange={(e) => handleInputChange('showRate', parseFloat(e.target.value) || 0)}
-              className="w-full border rounded px-3 py-2 text-gray-800"
+              className={`w-full border rounded px-3 py-2 text-gray-800 ${negativeWarning === 'showRate' ? 'border-red-500 border-2' : ''}`}
             />
+            {negativeWarning === 'showRate' && <p className="text-red-500 text-xs mt-1">positive numbers only ya goof</p>}
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">Revenue Per Call ($)</label>
             <input
               type="number"
+              min="0"
               value={editedRole.revenuePerCall || ''}
               onChange={(e) => handleInputChange('revenuePerCall', parseFloat(e.target.value) || 0)}
-              className="w-full border rounded px-3 py-2 text-gray-800"
+              className={`w-full border rounded px-3 py-2 text-gray-800 ${negativeWarning === 'revenuePerCall' ? 'border-red-500 border-2' : ''}`}
             />
+            {negativeWarning === 'revenuePerCall' && <p className="text-red-500 text-xs mt-1">positive numbers only ya goof</p>}
           </div>
         </div>
 
@@ -245,7 +261,7 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
         </div>
         <div className="bg-gray-50 rounded-lg p-3 text-center">
           <p className="text-gray-500 text-xs mb-1">Revenue/Call</p>
-          <p className="text-lg font-bold text-orange-600">{formatCurrency(role.revenuePerCall)}</p>
+          <p className="text-lg font-bold text-orange-600">{formatRevenuePerCall(role.revenuePerCall)}</p>
         </div>
       </div>
     </div>
