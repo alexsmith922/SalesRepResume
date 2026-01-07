@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Profile, Role } from '../types';
 import { formatCurrency } from '../utils/formatUtils';
+import { AnimatedNumber } from './AnimatedNumber';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -182,11 +183,15 @@ export function ProfileHeader({ profile, roles, onUpdateProfile, isViewMode }: P
       <div className="grid grid-cols-2 gap-4 mt-8">
         <div className="bg-white/10 rounded-lg p-4 text-center">
           <p className="text-blue-100 text-sm mb-1">Total Revenue Generated</p>
-          <p className="text-3xl font-bold">{formatCurrency(totalRevenue)}</p>
+          <p className="text-3xl font-bold">
+            <AnimatedNumber value={totalRevenue} formatter={formatCurrency} />
+          </p>
         </div>
         <div className="bg-white/10 rounded-lg p-4 text-center">
           <p className="text-blue-100 text-sm mb-1">Total Cash Collected</p>
-          <p className="text-3xl font-bold">{formatCurrency(totalCashCollected)}</p>
+          <p className="text-3xl font-bold">
+            <AnimatedNumber value={totalCashCollected} formatter={formatCurrency} />
+          </p>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Role } from '../types';
-import { formatCurrency, formatPercentage, getCompanyLogoUrl, formatDateRange } from '../utils/formatUtils';
+import { formatCurrency, formatPercentage, getCompanyLogoUrl, formatDateRange, getIndustryColors } from '../utils/formatUtils';
 
 interface RoleCardProps {
   role: Role;
@@ -14,7 +14,14 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
   const [editedRole, setEditedRole] = useState(role);
   const [logoError, setLogoError] = useState(false);
 
-  const logoUrl = getCompanyLogoUrl(editedRole.companyDomain);
+  // Reset states when role prop changes
+  useEffect(() => {
+    setEditedRole(role);
+    setLogoError(false);
+  }, [role]);
+
+  const logoUrl = getCompanyLogoUrl(role.companyDomain);
+  const industryColors = role.industry ? getIndustryColors(role.industry) : null;
 
   const handleSave = () => {
     onUpdate(editedRole);
@@ -194,16 +201,16 @@ export function RoleCard({ role, onUpdate, onDelete, isViewMode }: RoleCardProps
             <div>
               <h3 className="text-xl font-bold text-gray-800">{role.companyName || 'Company Name'}</h3>
               <p className="text-gray-600">{role.title || 'Title'}</p>
-              <div className="flex gap-2 mt-1">
-                {role.industry && (
-                  <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">{role.industry}</span>
-                )}
-                {(role.startDate || role.isCurrent) && (
-                  <span className="text-gray-500 text-sm">
-                    {formatDateRange(role.startDate, role.endDate, role.isCurrent)}
-                  </span>
-                )}
-              </div>
+              {(role.startDate || role.isCurrent) && (
+                <p className="text-gray-500 text-sm mt-1">
+                  {formatDateRange(role.startDate, role.endDate, role.isCurrent)}
+                </p>
+              )}
+              {role.industry && industryColors && (
+                <span className={`${industryColors.bg} ${industryColors.text} text-xs px-2 py-1 rounded inline-block mt-1`}>
+                  {role.industry}
+                </span>
+              )}
             </div>
             {!isViewMode && (
               <button

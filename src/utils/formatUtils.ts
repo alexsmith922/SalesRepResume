@@ -18,9 +18,41 @@ export function getCompanyLogoUrl(domain: string): string {
   return `https://logo.clearbit.com/${cleanDomain}`;
 }
 
+// Generate consistent colors based on industry name
+export function getIndustryColors(industry: string): { bg: string; text: string } {
+  const colors = [
+    { bg: 'bg-blue-100', text: 'text-blue-700' },
+    { bg: 'bg-green-100', text: 'text-green-700' },
+    { bg: 'bg-purple-100', text: 'text-purple-700' },
+    { bg: 'bg-orange-100', text: 'text-orange-700' },
+    { bg: 'bg-pink-100', text: 'text-pink-700' },
+    { bg: 'bg-teal-100', text: 'text-teal-700' },
+    { bg: 'bg-indigo-100', text: 'text-indigo-700' },
+    { bg: 'bg-rose-100', text: 'text-rose-700' },
+    { bg: 'bg-amber-100', text: 'text-amber-700' },
+    { bg: 'bg-cyan-100', text: 'text-cyan-700' },
+  ];
+
+  // Simple hash function to get consistent color for same industry
+  let hash = 0;
+  for (let i = 0; i < industry.length; i++) {
+    hash = industry.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+}
+
 export function formatDateRange(startDate: string, endDate: string, isCurrent: boolean): string {
-  const start = startDate ? new Date(startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
-  const end = isCurrent ? 'Present' : (endDate ? new Date(endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '');
+  const formatMonth = (dateStr: string) => {
+    if (!dateStr) return '';
+    // Parse YYYY-MM format correctly by adding day
+    const [year, month] = dateStr.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+
+  const start = formatMonth(startDate);
+  const end = isCurrent ? 'Present' : formatMonth(endDate);
 
   if (start && end) {
     return `${start} - ${end}`;
